@@ -5,7 +5,7 @@ import numpy as np
 import pyscreenshot as ImageGrab
 
 from screen import get_board
-from solver_v4 import Board
+from solver_v5 import Board
 from click import move_mouse, focus
 
 

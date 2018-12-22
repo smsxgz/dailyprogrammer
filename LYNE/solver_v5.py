@@ -153,6 +153,10 @@ if __name__ == '__main__':
     #         board.append(input())
     #     b = Board(board)
     #     b.solve()
-    b = Board(['ssss', 's3Ss', 'd32s', 'd23S', 'd2dd', 'dDdD'])
-    b._solve()
+    b = Board(['tTtt', 't42t', 'd3tT', 'd32D', 'Dd3d', '0ddd'])
+
+    from mylib import StopWatch
+
+    with StopWatch():
+        b._solve()
     print(b.solution)
