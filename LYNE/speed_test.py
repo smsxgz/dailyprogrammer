@@ -6,7 +6,7 @@ import pyscreenshot as ImageGrab
 from screen import get_board
 
 from solver_v3 import Board as BoardV3
-from solver_v4 import Board as BoardV4
+from solver_v5 import Board as BoardV5
 
 from mylib import StopWatch
 
@@ -22,10 +22,10 @@ img = cv2.cvtColor(np.asarray(img), cv2.COLOR_RGB2BGR)
 board, xs, ys = get_board(img)
 print('\n'.join([''.join(t) for t in board]))
 
-# board = ['ttST', 't330', 'tS3t', 'd3Ts', 'd23D', 'dDss']
+# board = ['ssss', 's3Ss', 'd32s', 'd23S', 'd2dd', 'dDdD']
 with StopWatch():
-    print('solver v4')
-    BoardV4(board).solve()
+    print('solver v5')
+    BoardV5(board).solve()
 with StopWatch():
     print('solver v3')
     BoardV3(board).solve()

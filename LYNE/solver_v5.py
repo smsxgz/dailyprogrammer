@@ -6,21 +6,30 @@ D for diamond
 from collections import defaultdict
 
 DIRECTIONS = {
-    (1, 1): 'd',
-    (1, 0): 'v',
-    (1, -1): 'd',
-    (0, 1): 'h',
-    (0, -1): 'h',
-    (-1, 1): 'd',
-    (-1, 0): 'v',
-    (-1, -1): 'd'
+    (1, 1): '↘',
+    (1, 0): '↓',
+    (1, -1): '↙',
+    (0, 1): '→',
+    (0, -1): '←',
+    (-1, 1): '↗',
+    (-1, 0): '↑',
+    (-1, -1): '↖'
 }
 
 
-def get_restriction_name(dx, dy, x, y):
-    x += min(0, dx)
-    y += min(0, dy)
-    return '{}_{}_{}'.format(DIRECTIONS[(dx, dy)], x, y)
+class Node:
+    def __init__(self, ch):
+        if ch.isupper():
+            self.shape = ch.lower()
+            self.visit = 1
+        elif ch.islower():
+            self.shape = ch
+            self.visit = 2
+        else:
+            self.shape = 'a'
+            self.visit = 2 * int(ch)
+
+        self.edges = []
 
 
 class Board:
@@ -30,47 +39,48 @@ class Board:
 
         self.incomplete_nodes = self.row * self.col
 
-        self.board = defaultdict(dict)
+        self.board = dict()
         self.endpoints = defaultdict(list)
         self.incomplete_shape_nodes = defaultdict(int)
         for i, line in enumerate(board, 1):
             for j, ch in enumerate(line, 1):
                 if ch.isupper():
-                    self.board[(i, j)]['shape'] = ch.lower()
-                    self.board[(i, j)]['visit'] = 1
                     self.endpoints[ch].append((i, j))
                 elif ch.islower():
-                    self.board[(i, j)]['shape'] = ch
-                    self.board[(i, j)]['visit'] = 2
                     self.incomplete_shape_nodes[ch] += 1
-                else:
-                    self.board[(i, j)]['shape'] = 'a'
-                    self.board[(i, j)]['visit'] = 2 * int(ch)
-                    if int(ch) == 0:
-                        self.incomplete_nodes -= 1
+                n = Node(ch)
+                if n.visit == 0:
+                    self.incomplete_nodes -= 1
+                self.board[(i, j)] = n
 
         self.shapes = list(self.endpoints.keys())
-        self.restrictions = set()
         self.solution = []
 
     def _gen_edges(self, shape, i, j):
+        coord = (i, j)
         for di, dj in DIRECTIONS:
             new_coord = (i + di, j + dj)
 
             if new_coord not in self.board:
                 continue
 
-            elif self.board[new_coord]['shape'] not in ['a', shape]:
+            elif self.board[new_coord].shape not in ['a', shape]:
                 continue
 
-            elif self.board[new_coord]['visit'] == 0:
+            elif self.board[new_coord].visit == 0:
                 continue
 
-            restriction = get_restriction_name(di, dj, i, j)
-            if restriction in self.restrictions:
+            if (di, dj) in self.board[coord].edges or (
+                    -di, -dj) in self.board[new_coord].edges:
                 continue
 
-            yield di, dj, restriction
+            coord1 = (coord[0], new_coord[1])
+            coord2 = (new_coord[0], coord[1])
+            if (di, -dj) in self.board[coord1].edges or (
+                    -di, dj) in self.board[coord2].edges:
+                continue
+
+            yield di, dj
 
     def _solve(self, x=None, y=None, shape=None, path=[]):
         if x is None:
@@ -89,7 +99,7 @@ class Board:
                 return False
 
         src_node = self.board[(x, y)]
-        if src_node['visit'] == 0:
+        if src_node.visit == 0:
             if self.incomplete_shape_nodes[shape] == 0:
                 return False
             self.solution.append(path + [(x, y)])
@@ -99,31 +109,34 @@ class Board:
             self.solution.pop(-1)
             return False
 
-        for dx, dy, restriction in self._gen_edges(shape, x, y):
+        possible_edges = list(self._gen_edges(shape, x, y))
+        if len(possible_edges) < src_node.visit:
+            return False
+        for dx, dy in possible_edges:
             node = self.board[(x + dx, y + dy)]
-            src_node['visit'] -= 1
-            if src_node['visit'] == 0:
+            src_node.edges.append((dx, dy))
+            src_node.visit -= 1
+            if src_node.visit == 0:
                 self.incomplete_nodes -= 1
-                if src_node['shape'] == shape:
+                if src_node.shape == shape:
                     self.incomplete_shape_nodes[shape] -= 1
-            node['visit'] -= 1
-            if node['visit'] == 0:
+            node.visit -= 1
+            if node.visit == 0:
                 self.incomplete_nodes -= 1
-            self.restrictions.add(restriction)
 
             found = self._solve(x + dx, y + dy, shape, path + [(x, y)])
             if found:
                 return True
 
-            if src_node['visit'] == 0:
+            if src_node.visit == 0:
                 self.incomplete_nodes += 1
-                if src_node['shape'] == shape:
+                if src_node.shape == shape:
                     self.incomplete_shape_nodes[shape] += 1
-            src_node['visit'] += 1
-            if node['visit'] == 0:
+            src_node.visit += 1
+            if node.visit == 0:
                 self.incomplete_nodes += 1
-            node['visit'] += 1
-            self.restrictions.remove(restriction)
+            node.visit += 1
+            src_node.edges.pop(-1)
 
         return False
 
