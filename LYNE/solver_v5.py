@@ -20,7 +20,7 @@ DIRECTIONS = {
 class Node:
     def __init__(self, ch):
         if ch.isupper():
-            self.shape = ch.lower()
+            self.shape = ch
             self.visit = 1
         elif ch.islower():
             self.shape = ch
@@ -56,6 +56,23 @@ class Board:
         self.shapes = list(self.endpoints.keys())
         self.solution = []
 
+    def _print_path(self, path):
+        board = [[' ' for j in range(2 * self.col - 1)]
+                 for i in range(2 * self.row - 1)]
+
+        for i in range(self.row):
+            for j in range(self.col):
+                board[2 * i][2 * j] = self.board[(i + 1, j + 1)].shape
+
+        start = path.pop(0)
+        for node in path:
+            board[start[0] + node[0] - 2][start[1] + node[1] -
+                                          2] = DIRECTIONS[(node[0] - start[0],
+                                                           node[1] - start[1])]
+            start = node
+        print('\n'.join([''.join(line) for line in board]))
+        print('=' * 30)
+
     def _gen_edges(self, shape, i, j):
         coord = (i, j)
         for di, dj in DIRECTIONS:
@@ -64,7 +81,9 @@ class Board:
             if new_coord not in self.board:
                 continue
 
-            elif self.board[new_coord].shape not in ['a', shape]:
+            elif shape != 'a' and self.board[new_coord].shape.lower() not in [
+                    'a', shape
+            ]:
                 continue
 
             elif self.board[new_coord].visit == 0:
@@ -100,8 +119,10 @@ class Board:
 
         src_node = self.board[(x, y)]
         if src_node.visit == 0:
-            if self.incomplete_shape_nodes[shape] == 0:
+            if self.incomplete_shape_nodes[shape] > 0:
                 return False
+            # from IPython import embed
+            # embed()
             self.solution.append(path + [(x, y)])
             found = self._solve()
             if found:
@@ -110,7 +131,8 @@ class Board:
             return False
 
         possible_edges = list(self._gen_edges(shape, x, y))
-        if len(possible_edges) < src_node.visit:
+        if len(list(self._gen_edges(src_node.shape.lower(), x,
+                                    y))) < src_node.visit:
             return False
         for dx, dy in possible_edges:
             node = self.board[(x + dx, y + dy)]
@@ -153,10 +175,9 @@ if __name__ == '__main__':
     #         board.append(input())
     #     b = Board(board)
     #     b.solve()
-    b = Board(['tTtt', 't42t', 'd3tT', 'd32D', 'Dd3d', '0ddd'])
-
-    from mylib import StopWatch
-
-    with StopWatch():
-        b._solve()
-    print(b.solution)
+    # b = Board(['tTtt', 't42t', 'd3tT', 'd32D', 'Dd3d', '0ddd'])
+    b = Board(['ddd', 'd4d', '22d', '23d', '2D2', 'Ddd'])
+    # b = Board(['TDd', 't2T', 'Ddt'])
+    b._solve()
+    for path in b.solution:
+        b._print_path(path)

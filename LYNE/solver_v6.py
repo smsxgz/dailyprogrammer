@@ -20,7 +20,7 @@ DIRECTIONS = {
 class Node:
     def __init__(self, ch):
         if ch.isupper():
-            self.shape = ch.lower()
+            self.shape = ch
             self.visit = 1
         elif ch.islower():
             self.shape = ch
@@ -56,15 +56,38 @@ class Board:
         self.shapes = list(self.endpoints.keys())
         self.solution = []
 
-    def _gen_edges(self, shape, i, j):
+    def _print_path(self, path):
+        board = [[' ' for j in range(2 * self.col - 1)]
+                 for i in range(2 * self.row - 1)]
+
+        for i in range(self.row):
+            for j in range(self.col):
+                board[2 * i][2 * j] = self.board[(i + 1, j + 1)].shape
+
+        start = path.pop(0)
+        for node in path:
+            board[start[0] + node[0] - 2][start[1] + node[1] -
+                                          2] = DIRECTIONS[(node[0] - start[0],
+                                                           node[1] - start[1])]
+            start = node
+        print('\n'.join([''.join(line) for line in board]))
+        print('=' * 30)
+
+    def _get_possible_edges(self, i, j, shape=None):
         coord = (i, j)
+        if shape is None:
+            shape = self.board[coord].shape.lower()
+
+        edges = []
         for di, dj in DIRECTIONS:
             new_coord = (i + di, j + dj)
 
             if new_coord not in self.board:
                 continue
 
-            elif self.board[new_coord].shape not in ['a', shape]:
+            elif shape != 'a' and self.board[new_coord].shape.lower() not in [
+                    'a', shape
+            ]:
                 continue
 
             elif self.board[new_coord].visit == 0:
@@ -80,7 +103,20 @@ class Board:
                     -di, dj) in self.board[coord2].edges:
                 continue
 
-            yield di, dj
+            edges.append((di, dj))
+        return edges
+
+    def _gen_edges(self, shape, i, j):
+        tmp = self.board[(i, j)].visit
+        possible_edges = self._get_possible_edges(i, j, shape)
+        for di, dj in possible_edges:
+            possible = len(self._get_possible_edges(i + di, j + dj))
+            visit = self.board[(i + di, j + dj)].visit
+            if possible < visit:
+                return []
+            elif possible == visit and visit > 1 and tmp == 1:
+                return [(di, dj)]
+        return possible_edges
 
     def _solve(self, x=None, y=None, shape=None, path=[]):
         if x is None:
@@ -100,7 +136,7 @@ class Board:
 
         src_node = self.board[(x, y)]
         if src_node.visit == 0:
-            if self.incomplete_shape_nodes[shape] == 0:
+            if self.incomplete_shape_nodes[shape] > 0:
                 return False
             self.solution.append(path + [(x, y)])
             found = self._solve()
@@ -109,7 +145,9 @@ class Board:
             self.solution.pop(-1)
             return False
 
-        for dx, dy in self._gen_edges(shape, x, y):
+        edges = self._gen_edges(shape, x, y)
+        # print(path, edges, x, y)
+        for dx, dy in edges:
             node = self.board[(x + dx, y + dy)]
             src_node.edges.append((dx, dy))
             src_node.visit -= 1
@@ -150,6 +188,8 @@ if __name__ == '__main__':
     #         board.append(input())
     #     b = Board(board)
     #     b.solve()
-    b = Board(['S22ss', 'D33ss', 'd32TS', 'Dt2tT'])
+    b = Board(['ddd', 'd4d', '22d', '23d', '2D2', 'Ddd'])
+    # b = Board(['TDd', 't2T', 'Ddt'])
     b._solve()
-    print(b.solution)
+    for path in b.solution:
+        b._print_path(path)
