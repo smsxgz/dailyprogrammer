@@ -44,6 +44,8 @@ class Board:
 
         while stack:
             player = stack.pop(0)
+            if player in mem:
+                continue
             mem.add(player)
             if player.y < norm_pos.y:
                 norm_pos = player
