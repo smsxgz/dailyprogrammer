@@ -1,6 +1,6 @@
 A Sokoban solver in Python.
 
-<center><img src="/figure/5.1/out_001.png" alt="drawing" style="width:500px;"/></center>
+<center><img src="/images/out_001.png" alt="drawing" style="width:500px;"/></center>
 
 The codes can be found in https://github.com/smsxgz/dailyprogrammer/tree/master/puzzlerama/sokoban.
 <!--more-->
@@ -21,7 +21,7 @@ We use a Fibonacci heap for the priority queue required in A* search algorithm. 
 It worth noting that __standard__ binary heap, leftist heap and binomial heap are not qualified for the work here. In standard leftist heap or binomial heap, if we decrease value of a node, we may need to swap the value of some nodes instead of nodes themselves to fix the heap. Of course we can modify standard leftist heap or binomial heap to reach our needs, for example we can apply doubly linked list instead of singly linked list in standard binomial heap to make exchange nodes directly possible.
 
 <br>
-<center><img src="/figure/5.1/sample.gif" alt="drawing" style="width:500px;"/></center>
+<center><img src="/images/sample.gif" alt="drawing" style="width:500px;"/></center>
 
 
 ### Reference
