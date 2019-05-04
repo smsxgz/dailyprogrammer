@@ -129,10 +129,10 @@ def find_solution(board, steps=1, solution=[]):
 
 
 if __name__ == '__main__':
-    # board = get_board(['  p  ', '  y  ', ' pyy ', ' ppy ', 'pyypy', 'pypyp'])
-    # board = get_board(['  y  ', ' yy  ', 'yypyp', 'ypypy', 'pyypy'])
-    board = get_board(
-        ['   p  ', '  rr  ', '  bbp ', ' rrbr ', ' bbrbp', 'bbppbp'])
+    board = get_board([
+        '  a    ', '  b    ', '  p    ', '  abp  ', '  ypb  ', '  ypb  ',
+        'a pypbb'
+    ])
     print_board(board)
-    find_solution(board, 2)
+    find_solution(board, 3)
     # solver.print_board()
