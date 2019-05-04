@@ -27,6 +27,9 @@ class FibonacciNode:
     def _key(self):
         return (self.value['boxes'], self.value['norm_pos'])
 
+    def __repr__(self):
+        return f"Node({self.value['fscore']})"
+
 
 class FibonacciHeap:
     def __init__(self, node=None):
@@ -156,6 +159,7 @@ class FibonacciHeap:
             child.right = y
         y.parent = x
         x.degree += 1
+        y.marked = False
 
     def consolidate(self):
         dn = int(log2(self.num_key)) + 2
@@ -168,18 +172,20 @@ class FibonacciHeap:
             d = w.degree
             x = w
             w = w.right
-            while A[d]:
+            while A[d] is not None:
                 y = A[d]
                 if x > y:
                     x, y = y, x
                 self.link(y, x)
                 A[d] = None
                 d += 1
+
             A[d] = x
 
         d = w.degree
         x = w
         w = w.right
+
         while A[d]:
             y = A[d]
             if x > y:
@@ -187,6 +193,7 @@ class FibonacciHeap:
             self.link(y, x)
             A[d] = None
             d += 1
+
         A[d] = x
 
         min_key = None

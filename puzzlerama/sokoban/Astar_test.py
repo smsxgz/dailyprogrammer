@@ -1,7 +1,7 @@
 from load_map import load_map
 from algorithms.Astar import Astar_search
 
-board, boxes, player = load_map('maps/hard.txt')
+board, boxes, player = load_map('maps/advanced2.txt')
 board.print_board(boxes, player)
 
 path = Astar_search(board, boxes, player)

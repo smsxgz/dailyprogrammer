@@ -74,15 +74,19 @@ def detect(square):
 
     if (square.mean(axis=(0, 1)) > 200).all():
         return '$'
-    edges = cv2.Canny(square[:, :, 1], 25, 54)
-    lines = cv2.HoughLines(edges, 1, np.pi / 180, 100)
-    if lines is not None:
-        if len(lines[0]) == 1:
-            if abs(lines[0][0][1] - 2.356) > 0.05:
-                raise Exception('Detect a strange line!')
-            return '*'
-        elif len(lines[0]) > 1:
-            raise Exception('Detect two lines!')
+
+    if np.abs(square.mean(axis=(0, 1)) - np.array([195, 135, 235])).sum() < 24:
+        return "*"
+
+    # edges = cv2.Canny(square[:, :, 1], 25, 54)
+    # lines = cv2.HoughLines(edges, 1, np.pi / 180, 100)
+    # if lines is not None:
+    #     if len(lines[0]) == 1:
+    #         if abs(lines[0][0][1] - 2.356) > 0.05:
+    #             raise Exception('Detect a strange line!')
+    #         return '*'
+    #     elif len(lines[0]) > 1:
+    #         raise Exception('Detect two lines!')
 
     return ' '
 
@@ -126,7 +130,7 @@ def main():
         subprocess.call('clear')
         board.print_board(boxes, player)
         input()
-        image_save(idx)
+        # image_save(idx)
 
 
 if __name__ == '__main__':
