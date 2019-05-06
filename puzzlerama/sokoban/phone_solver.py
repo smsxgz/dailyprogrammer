@@ -59,7 +59,7 @@ def detect(square):
     if np.abs(square.mean(axis=(0, 1)) - np.array([159, 225, 254])).sum() < 24:
         return "#"
     circles = cv2.HoughCircles(
-        square[:, :, 2], cv2.HOUGH_GRADIENT, 1, 50, param1=80, param2=30)
+        square[:, :, 1], cv2.HOUGH_GRADIENT, 1, 50, param1=80, param2=30)
     if circles is not None:
         if len(circles[0]) == 1:
             radius = circles[0][0][2]
@@ -67,8 +67,7 @@ def detect(square):
                 return '.'
             elif abs(radius - 37) < 2:
                 return '@'
-            else:
-                raise Exception('Detect a strange circle!')
+
         elif len(circles[0]) > 1:
             raise Exception('Detect two circle!')
 
@@ -119,6 +118,9 @@ def main():
                 boxes.add(pos)
             if char in PLAYER:
                 player = pos
+
+    if len(boxes) - len(goals) == 1:
+        goals.add(player)
 
     board = Board(num_lines, walls, goals)
     board.print_board(boxes, player)
