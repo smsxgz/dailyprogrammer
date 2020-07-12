@@ -1,0 +1,8 @@
+h4 c5 d7 h11 h3 s11 s8
+h8 c11 s3 c10 h5 d11 s7
+c2 h9 c3 c1 c8 d4 s4
+s5 c13 s12 h12 s13 d2 d8
+h13 h2 d5 d3 c9 c12
+d10 c4 c7 s9 s10 d6
+s6 h6 c6 d13 d12 d9
+h1 d1 h10 s2 s1 h7
