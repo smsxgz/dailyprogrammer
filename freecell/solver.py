@@ -20,12 +20,12 @@ def dfs(board):
                 continue
             if sum(b[0]) == 230:
                 print(b[0])
-                return solution + [move]
+                return solution + [(move, b)]
 
             mem.add(hash_board(b))
             # max_goal = max(sum(b[0]), max_goal)
 
-            stack.append([b, solution + [move]])
+            stack.append([b, solution + [(move, b)]])
 
 
 if __name__ == '__main__':
@@ -40,5 +40,7 @@ if __name__ == '__main__':
     board = [list(range(4, 8)), []] + board
 
     print_board(board)
-    for idx, solution in enumerate(dfs(board)):
-        print(idx, solution)
+    for idx, (move, board) in enumerate(dfs(board)):
+        print(idx, move)
+        print_board(board)
+        input()

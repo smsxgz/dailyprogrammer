@@ -7,6 +7,10 @@ def deepcopy(lst):
 
 DICT1 = {'s': 0, 'h': 1, 'c': 2, 'd': 3}
 DICT2 = {0: 's', 1: 'h', 2: 'c', 3: 'd'}
+FREECELL = 4
+LINE = 8
+# FREECELL = 3
+# LINE = 10
 
 
 def str2id(card_str):
@@ -44,9 +48,9 @@ def valid_moves(board):
     board = board[2:]
 
     m = len(board)
-    empty = 8 - m
+    empty = LINE - m
 
-    moves = (5 - len(freecells)) * 2**empty
+    moves = (FREECELL - len(freecells) + 1) * 2**empty
 
     # from Freecell to Goal
     for i in range(len(freecells)):
@@ -122,7 +126,7 @@ def valid_moves(board):
             idx -= 1
 
     # from board to freecell
-    if len(freecells) < 4:
+    if len(freecells) < FREECELL:
         for j in range(m):
             tmp_board = deepcopy(board)
             c = tmp_board[j].pop(-1)
